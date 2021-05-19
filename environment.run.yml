@@ -1,0 +1,8 @@
+# Do: pin all runtime dependencies in this spec with PEP 440 version specifiers
+name: agoro-field-boundary-detector-run-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python~=3.8.8
+  - pip~=20.2

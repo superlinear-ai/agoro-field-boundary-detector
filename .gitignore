@@ -1,0 +1,84 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# General ignores
+.DS_Store
+_*/
+/data/
+/tmp/
+TEMP*
+
+# Editors
+.history/
+.idea
+*.iml
+*~
+
+# No data binaries
+*.dat
+*.pickle*
+*.zip
+
+# No data files
+*.csv
+*.xls
+*.xlsm
+*.xlsx
+*.xlsb
+
+# No images and pdf
+*.gif
+*.jpg
+*.svg
+*.png
+*.pdf
+
+# No hidden files
+.env
+.hypothesis
+.mypy_cache
+.dmypy.json
+.pyre
+.pyre_configuration
+.pytype
+.pytest_cache
+.cache
+.cov*
+*.output
+
+# Setup.cfg
+reports/
+coverage/
+
+# Conda
+.envs/
+environment.yml
+
+# Jupyter
+.ipynb_checkpoints/
+experiments/
+notebooks/
+*.ipynb
+
+# Portray
+site/

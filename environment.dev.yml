@@ -1,0 +1,50 @@
+# Do not: include runtime dependencies in this spec
+name: agoro-field-boundary-detector-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - bump2version
+  - coloredlogs
+  - conda-merge
+  - cruft
+  - hvplot
+  - invoke
+  - ipywidgets
+  - isort
+  - jupyterlab
+  - mamba
+  - matplotlib
+  - moto
+  - nodejs
+  - nomkl
+  - mypy
+  - pip
+  - pre-commit
+  - proselint
+  - pydantic
+  - pydocstyle
+  - safety
+  - shellcheck
+  - snakeviz
+  - tqdm
+  - pip:
+      - birdseye
+      - black
+      - flake8
+      - flake8-comprehensions
+      - flake8-bandit
+      - flake8-bugbear
+      - flake8-mutable
+      - flake8-pytest-style
+      - flake8-rst-docstrings
+      - flake8-use-fstring
+      - portray
+      - pytest
+      - pytest-bdd
+      - pytest-clarity
+      - pytest-cov
+      - pytest-vcr
+      - pytest-xdist
+      - scalene
+      - snoop

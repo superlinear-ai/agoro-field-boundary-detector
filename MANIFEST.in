@@ -1,0 +1,2 @@
+include README* LICENSE* CHANGELOG* MANIFEST*
+recursive-include src *.json *.toml *.yaml *.yml *.lic *.xml *.css *.js *.html *.svg py.typed
