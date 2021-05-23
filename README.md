@@ -2,7 +2,8 @@
 
 Detect field boundaries using satellite imagery.
 
-TO-DO: REWRITE WHOLE README!
+TO-DO: Rewrite whole readme
+TO-DO: remove deprecated code
 
 ## Installation
 

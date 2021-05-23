@@ -71,6 +71,7 @@ coverage/
 
 # Conda
 .envs/
+venv/
 environment.yml
 
 # Jupyter
