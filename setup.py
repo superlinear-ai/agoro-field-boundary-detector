@@ -22,7 +22,7 @@ with open(os.path.join(os.path.dirname(__file__), "environment.run.yml")) as spe
 setup(
     name="agoro_field_boundary_detector",
     version="0.0.0",
-    description="Detect field boundaries using satallite imagery.",
+    description="Detect field boundaries using satellite imagery.",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=install_requires,

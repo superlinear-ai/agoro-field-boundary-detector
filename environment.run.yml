@@ -6,3 +6,11 @@ channels:
 dependencies:
   - python~=3.8.8
   - pip~=20.2
+  - tqdm
+  - pip:
+      - torch
+      - torchvision
+      - pycocotools~=2.0.2
+      - earthengine-api~=0.1.264
+      - geopandas~=0.9.0
+      - opencv-python~=4.5.1.48

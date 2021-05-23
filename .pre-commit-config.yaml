@@ -6,6 +6,7 @@ repos:
     rev: v3.3.0
     hooks:
       - id: check-added-large-files
+        args: ['--maxkb=65536']
       - id: check-ast
       - id: check-builtin-literals
       - id: check-byte-order-marker
@@ -50,17 +51,19 @@ repos:
         entry: flake8
         language: system
         types: [python]
-        exclude: "^tasks/"
+        exclude: "(^tasks/|.*_depr[.]py)"
       - id: mypy
         name: mypy
         entry: mypy
         language: system
         types: [python]
+        exclude: ".*_depr[.]py"
       - id: pydocstyle
         name: pydocstyle
         entry: pydocstyle
         language: system
         types: [python]
+        exclude: ".*_depr[.]py"
       - id: proselint
         name: proselint
         entry: env XDG_CONFIG_HOME=.vscode proselint

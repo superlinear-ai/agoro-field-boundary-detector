@@ -24,7 +24,6 @@ var/
 # General ignores
 .DS_Store
 _*/
-/data/
 /tmp/
 TEMP*
 
@@ -38,6 +37,7 @@ TEMP*
 *.dat
 *.pickle*
 *.zip
+*.npy
 
 # No data files
 *.csv
@@ -50,7 +50,6 @@ TEMP*
 *.gif
 *.jpg
 *.svg
-*.png
 *.pdf
 
 # No hidden files
@@ -77,8 +76,9 @@ environment.yml
 # Jupyter
 .ipynb_checkpoints/
 experiments/
-notebooks/
-*.ipynb
 
 # Portray
 site/
+
+# Deprecated code
+*_depr

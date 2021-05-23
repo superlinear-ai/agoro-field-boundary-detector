@@ -27,7 +27,6 @@ dependencies:
   - safety
   - shellcheck
   - snakeviz
-  - tqdm
   - pip:
       - birdseye
       - black
@@ -48,3 +47,6 @@ dependencies:
       - pytest-xdist
       - scalene
       - snoop
+      - folium~=0.12.1
+      - label-studio
+      - scipy
