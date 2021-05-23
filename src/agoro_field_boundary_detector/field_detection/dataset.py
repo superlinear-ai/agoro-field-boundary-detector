@@ -20,7 +20,7 @@ class Dataset(torch.utils.data.Dataset):  # type: ignore
         self.path = path
         self.fields_path = self.path / "fields"
         self.masks_path = self.path / "masks"
-        self.tags = [x.split("/")[-1][:-4] for x in glob(str(self.fields_path / "*"))]
+        self.tags = [Path(x).with_suffix("").name for x in glob(str(self.fields_path / "*"))]
 
     def __getitem__(self, idx: int) -> Any:
         """Get the item at the given index from the dataset."""
