@@ -1,4 +1,4 @@
 """Methods and classes to perform field-boundary detection."""
-from .main import load_model, predict_im_polygon
+from .model import FieldBoundaryDetector
 
-__all__ = ["predict_im_polygon", "load_model"]
+__all__ = ["FieldBoundaryDetector"]

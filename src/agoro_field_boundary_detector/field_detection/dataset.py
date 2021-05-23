@@ -9,6 +9,7 @@ import torch.utils.data
 from torchvision.transforms import functional as F_vis
 
 
+# TODO: Add to data/ folder
 class Dataset(torch.utils.data.Dataset):  # type: ignore
     """Dataset used to train the Mask RCNN model."""
 

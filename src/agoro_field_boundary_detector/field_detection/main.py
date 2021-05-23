@@ -10,6 +10,7 @@ from src.agoro_field_boundary_detector.field_detection.model import predict_mask
 from src.agoro_field_boundary_detector.field_detection.utils import get_image
 
 
+# TODO: Add to model.py
 def load_model(
     model_path: Path = Path(__file__).parent / "../../models",
 ) -> Any:

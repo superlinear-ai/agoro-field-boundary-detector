@@ -10,7 +10,7 @@ TO-DO: remove deprecated code
 To install this package in your environment, run:
 
 ```bash
-pip install git+ssh://git@gitlab.com/radix-ai.git@v0.0.0
+pip install git+https://github.com/radix-ai/agoro-field-boundary-detector.git
 ```
 
 ## Contributing

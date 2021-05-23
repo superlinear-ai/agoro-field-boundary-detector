@@ -83,3 +83,7 @@ site/
 
 # Deprecated code
 *_depr
+
+# Models
+models/
+!models/__init__.py

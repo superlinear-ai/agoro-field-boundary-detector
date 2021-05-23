@@ -256,7 +256,7 @@ class MetricLogger(object):
         print(f"{header} Total time: {total_time_str} ({total_time / len(iterable):.4f} s / it)")
 
 
-def collate_fn(batch: Any) -> Any:
+def collate_fn(batch: Any) -> Any:  # TODO: Remove!
     """Something."""
     return tuple(zip(*batch))
 
