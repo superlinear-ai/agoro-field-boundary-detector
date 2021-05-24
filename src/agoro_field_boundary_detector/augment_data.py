@@ -66,7 +66,7 @@ def main(
     masks: List[np.ndarray],
     prefixes: List[str],
     write_folder: Path,
-    n_comb: int = 100,
+    n_comb: int = 50,
 ) -> None:
     """Generate and save data augmentations for all the fields and corresponding masks."""
     for field, mask, prefix in zip(fields, masks, prefixes):

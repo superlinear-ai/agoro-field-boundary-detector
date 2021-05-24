@@ -213,7 +213,7 @@ class FieldBoundaryDetector:
                 )
 
             # Stop if validation F1 starts to decrease
-            if early_stop and last_improvement >= patience:
+            if early_stop and last_improvement > patience:
                 break
 
         # Revert back to best-performing model and delete temporal files
