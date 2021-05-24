@@ -153,6 +153,6 @@ NOISE = [
     (t_linear, (0, 0)),
     (t_rotation, (0, 3)),
     (t_flip, (0, 2)),
-    (t_blur, (1, 5)),
-    (t_gamma, (5, 15)),
+    (t_blur, (1, 3)),
+    (t_gamma, (8, 12)),
 ]
