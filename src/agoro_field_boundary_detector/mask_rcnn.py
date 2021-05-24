@@ -16,6 +16,7 @@ def train(
     n_workers: int = 0,
     val_frac: float = 0.1,
     early_stop: bool = True,
+    patience: int = 3,
 ) -> None:
     """Train the model."""
     dataset = Dataset(path=Path(__file__).parent / "../../data/augmented")
@@ -26,6 +27,7 @@ def train(
         n_workers=n_workers,
         val_frac=val_frac,
         early_stop=early_stop,
+        patience=patience,
     )
 
 
