@@ -28,9 +28,10 @@ def load_annotations(path: Path) -> Dict[str, List[List[Tuple[int, int]]]]:
     # Load in the boundaries by field
     field_annotations = {}
     for annotation in annotations:
-        field_annotations[annotation["file_upload"]] = _transform(
-            annotation["annotations"][0]["result"]
-        )
+        name = annotation["file_upload"]
+        if "_" in name:
+            name = name.split("_")[0] + ".png"
+        field_annotations[name] = _transform(annotation["annotations"][0]["result"])
     return field_annotations
 
 
