@@ -1,6 +1,8 @@
 """Methods related to the Mask-RCNN model."""
 from datetime import datetime
 from pathlib import Path
+from random import getrandbits
+from shutil import rmtree
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -118,6 +120,7 @@ class FieldBoundaryDetector:
         n_workers: int = 0,
         val_frac: float = 0.1,
         early_stop: bool = True,
+        patience: int = 3,
     ) -> None:
         """
         Train the model.
@@ -128,6 +131,7 @@ class FieldBoundaryDetector:
         :param n_workers: Number of dataloader workers (0 for sequential training)
         :param val_frac: Fraction of dataset to use for validation
         :param early_stop: Whether or not to stop training when validation F1 score starts to decrease
+        :param patience: Early stopping patience, which indicates when training halts for decreasing F1
         """
         # Split the dataset in train and test set
         frac_idx = round(val_frac * len(dataset))
@@ -171,8 +175,12 @@ class FieldBoundaryDetector:
             gamma=0.1,
         )
 
+        # Create temporal folder to store models in
+        temp_folder = Path.cwd() / f"{getrandbits(128)}"
+        temp_folder.mkdir(exist_ok=False, parents=True)
+
         # Train the model
-        prev = 0
+        best_f1, best_epoch, last_improvement = 0.0, 0, 0
         for epoch in range(n_epoch):
             # Train for one epoch and update the learning rate afterwards
             train_one_epoch(
@@ -193,10 +201,25 @@ class FieldBoundaryDetector:
             )
             print(f" => F1 epoch {epoch}: {f1}")
 
+            # Check if improvement made, act accordingly
+            if best_f1 > f1:
+                last_improvement += 1
+            else:
+                best_f1 = f1
+                best_epoch = epoch
+                torch.save(
+                    self.model,
+                    temp_folder / f"{epoch}",
+                )
+
             # Stop if validation F1 starts to decrease
-            if early_stop and prev > f1:
+            if early_stop and last_improvement >= patience:
                 break
-            prev = f1
+
+        # Revert back to best-performing model and delete temporal files
+        self.model = torch.load(temp_folder / f"{best_epoch}")  # type: ignore
+        rmtree(temp_folder)
+        temp_folder.unlink(missing_ok=True)
         self.save()
 
     def test(
