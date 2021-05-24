@@ -28,7 +28,7 @@ def load_annotations(path: Path) -> Dict[str, List[List[Tuple[int, int]]]]:
     # Load in the boundaries by field
     field_annotations = {}
     for annotation in annotations:
-        field_annotations[annotations[0]["file_upload"]] = _transform(
+        field_annotations[annotation["file_upload"]] = _transform(
             annotation["annotations"][0]["result"]
         )
     return field_annotations
@@ -87,7 +87,7 @@ def _is_line(data: Any) -> bool:
     """Check if straight line."""
     x, y = zip(*data)
     assert len(x) == 3
-    for i in (-1, 0, 1):
+    for i in range(-2, 2 + 1):
         if x[0] - i == x[1] == x[2] + i:
             return True
         if y[0] - i == y[1] == y[2] + i:

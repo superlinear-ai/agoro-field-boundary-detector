@@ -1,4 +1,5 @@
 """Augment the training data."""
+import json
 from pathlib import Path
 from random import choice
 from typing import Any, Callable, Dict, List, Tuple
@@ -82,7 +83,13 @@ if __name__ == "__main__":
     # Load in the annotations
     DATA_PATH = Path(__file__).parent / "../../data"
     annotations = load_annotations(DATA_PATH / "annotations.json")
-    names = [k[:-4] for k in annotations.keys()]  # Cut of the '.png'
+
+    # Load in the requested coordinates, keep only training
+    with open(DATA_PATH / "coordinates.json", "r") as f:
+        coordinates = json.load(f)
+    coordinate_names = [f"{c[0]}-{c[1]}" for c in coordinates["train"]]
+    names = [k[:-4] for k in annotations.keys() if k[:-4] in coordinate_names]
+    # TODO: Manipulate names here to simulate "only X images labeled"
 
     # Load in fields and corresponding masks
     annotated_fields, annotated_masks = [], []
@@ -102,3 +109,17 @@ if __name__ == "__main__":
         prefixes=names,
         write_folder=DATA_PATH / "augmented",
     )
+
+    # Write test-data as-is
+    (DATA_PATH / "test/fields").mkdir(exist_ok=True, parents=True)
+    (DATA_PATH / "test/masks").mkdir(exist_ok=True, parents=True)
+    test_coordinate_names = [f"{c[0]}-{c[1]}" for c in coordinates["test"]]
+    test_names = [k[:-4] for k in annotations.keys() if k[:-4] in test_coordinate_names]
+    for name in test_names:
+        boundaries = annotations[f"{name}.png"]
+        field = np.asarray(Image.open(DATA_PATH / f"raw/{name}.png"))
+        mask = polygons_to_mask(boundaries)
+        with open(DATA_PATH / f"test/fields/{name}.npy", "wb") as f:  # type: ignore
+            np.save(f, field)
+        with open(DATA_PATH / f"test/masks/{name}.npy", "wb") as f:  # type: ignore
+            np.save(f, mask)

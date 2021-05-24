@@ -27,6 +27,7 @@ class FieldBoundaryDetector:
         model_path: Path,
         n_classes: int = 2,
         n_hidden: int = 256,
+        reset: bool = False,
     ):
         """
         Initialise the Field Boundary Detector model, either by loading in previous version or creating a new one.
@@ -34,12 +35,13 @@ class FieldBoundaryDetector:
         :param model_path: Path under which the model is saved or will be saved
         :param n_classes: Number of the classes (outputs) the model should have
         :param n_hidden: Number of hidden layers used in the MaskRCNN predictor
+        :param reset: Create a new model instead of loading a previously existing one
         """
         self.path = model_path
         self.n_classes = n_classes
         self.n_hidden = n_hidden
         self.model: Optional[torchvision.models.detection.maskrcnn_resnet50_fpn] = None
-        if not self.load():
+        if reset or not self.load():
             self.create_instance_segmentation_model()
 
     def __call__(
@@ -55,15 +57,14 @@ class FieldBoundaryDetector:
         :param model: Mask-RCNN model used to predict field boundaries
         :param im_path: Path indicating which field to check
         """
-        # Get the center of the image
-        center = im.shape[0] // 2, im.shape[1] // 2
-
         # Make masking predictions
         mask = self.get_mask(
             im=im,
+            thr=thr,
         )
 
-        # Extract polygon corresponding masked pixel, if exists
+        # Extract polygon of center pixel, if exists
+        center = im.shape[0] // 2, im.shape[1] // 2
         m_value = mask[center[0], center[1]]
         if m_value == 0:
             return []
@@ -71,6 +72,19 @@ class FieldBoundaryDetector:
             mask[mask != m_value] = 0
             mask[mask == m_value] = 1
             return mask_to_polygons(mask)[0]  # type: ignore
+
+    def get_all_polygons(
+        self,
+        im: np.ndarray,
+        thr: float = 0.8,
+    ) -> List[List[Tuple[int, int]]]:
+        """TODO: Documentation."""
+        # Make masking predictions
+        mask = self.get_mask(
+            im=im,
+            thr=thr,
+        )
+        return mask_to_polygons(mask)  # type: ignore
 
     def __str__(self) -> str:
         """Textual model representation."""
@@ -258,6 +272,10 @@ class FieldBoundaryDetector:
         :param overlap_thr: Proportion of the image that does not overlap in order to be valid
         :return: Image masks
         """
+        # Assure model in evaluation mode
+        if self.model.training:  # type: ignore
+            self.model.eval()  # type: ignore
+
         # Transform image to PyTorch tensor and put on right device
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
         im_t = F_vis.to_tensor(im).to(device)
@@ -274,11 +292,11 @@ class FieldBoundaryDetector:
                 mask[mask < thr] = 0
                 mask = mask.astype(np.int8)
 
-                # Ignore masks if they occupy less than 0.5% of the image
+                # Ignore masks if they occupy less than 0.3% of the image
                 if mask.sum() / len(mask.flatten()) < size_thr:
                     continue
 
-                # Ignore masks that mainly (50% or more) overlap with previously detected masks
+                # Ignore masks that mainly (80% or more) overlap with previously detected masks
                 previous = np.clip(result, a_min=0, a_max=1)
                 if (mask * previous).sum() > (1 - overlap_thr) * mask.sum():
                     continue
@@ -298,6 +316,7 @@ class FieldBoundaryDetector:
 
     def save(self) -> None:
         """Save the model."""
+        self.model.to(torch.device("cpu"))  # type: ignore
         torch.save(
             self.model,
             self.path,
