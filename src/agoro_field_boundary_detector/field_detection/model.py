@@ -1,7 +1,7 @@
 """Methods related to the Mask-RCNN model."""
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -191,6 +191,7 @@ class FieldBoundaryDetector:
                 data_loader_val,
                 device=device,
             )
+            print(f" => F1 epoch {epoch}: {f1}")
 
             # Stop if validation F1 starts to decrease
             if early_stop and prev > f1:
@@ -238,10 +239,9 @@ class FieldBoundaryDetector:
             data_loader,
             device=device,
         )
-        print(f"F1: {f1}")
+        print(f" ==> F1: {f1}")
 
         # Eye-ball evaluation
-        print("\nEye-ball evaluation:")
         time = datetime.now().strftime("%Y_%m_%d_%H_%M")
         for idx in range(min(len(dataset), n_show)):
             img, _ = dataset[idx]
@@ -253,12 +253,14 @@ class FieldBoundaryDetector:
             for polygon in polygons:
                 x, y = zip(*polygon)
                 plt.plot(x, y)
+            plt.axis("off")
+            plt.tight_layout()
             plt.savefig(write_path / f"{time}_eval_{idx}.png")  # type: ignore
             plt.close()
 
     def get_mask(
         self,
-        im: np.ndarray,
+        im: Union[np.ndarray, torch.Tensor],
         thr: float = 0.8,
         size_thr: float = 0.003,
         overlap_thr: float = 0.8,
@@ -277,8 +279,9 @@ class FieldBoundaryDetector:
             self.model.eval()  # type: ignore
 
         # Transform image to PyTorch tensor and put on right device
+        im_t: torch.Tensor = im if type(im) == torch.Tensor else F_vis.to_tensor(im)  # type: ignore
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
-        im_t = F_vis.to_tensor(im).to(device)
+        im_t = im_t.to(device)
         with torch.no_grad():
             # Predict all masks
             prediction = self.model([im_t])[0]  # type: ignore
