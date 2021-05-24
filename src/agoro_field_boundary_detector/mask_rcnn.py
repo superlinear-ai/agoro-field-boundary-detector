@@ -11,7 +11,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 def train(
     model: FieldBoundaryDetector,
-    n_epoch: int = 10,
+    n_epoch: int = 20,
     batch_size: int = 1,
     n_workers: int = 0,
     val_frac: float = 0.1,
