@@ -21,7 +21,7 @@ def generate(
     field: np.ndarray,
     mask: np.ndarray,
     write_path: Path,
-    n_comb: int = 100,
+    n_comb: int = 50,
     prefix: str = "",
 ) -> None:
     """TODO."""
@@ -45,9 +45,9 @@ def generate(
             noise=transformation[2],
             n_idx=transformation[3],
         )
-        with open(write_path / f"fields/{prefix}{idx}.npy", "wb") as f:
+        with open(write_path / f"fields/{prefix}_{idx}.npy", "wb") as f:
             np.save(f, field_t)
-        with open(write_path / f"masks/{prefix}{idx}.npy", "wb") as f:
+        with open(write_path / f"masks/{prefix}_{idx}.npy", "wb") as f:
             np.save(f, mask_t)
 
 

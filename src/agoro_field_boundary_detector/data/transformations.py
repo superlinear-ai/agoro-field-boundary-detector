@@ -16,7 +16,7 @@ def transform(
     n_idx: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Transform the field and mask using a translation and noise function."""
-    assert translation.__name__ in ("t_linear", "t_quartile", "t_offset")
+    assert translation.__name__ in ("t_linear", "t_quartile")
     assert noise.__name__ in ("t_linear", "t_rotation", "t_flip", "t_blur", "t_gamma")
     field, mask = translation(field, mask, t_idx)
     return noise(field, mask, n_idx)
@@ -51,32 +51,6 @@ def t_quartile(
     mask_slice = mask[
         (width // 2) * x : (width // 2) * (x + 1), (height // 2) * y : (height // 2) * (y + 1)
     ]
-    mask_slice = mask_slice.repeat(2, axis=0).repeat(2, axis=1)
-
-    # Normalise masking values
-    values = sorted(set(np.unique(mask_slice)) - {0})
-    for idx, v in enumerate(values):
-        mask_slice[mask_slice == v] = idx + 1
-    return field_slice, mask_slice
-
-
-def t_offset(
-    field: np.ndarray,
-    mask: np.ndarray,
-    offset: int,
-) -> Tuple[np.ndarray, np.ndarray]:
-    """Create a square (half size) under a given offset."""
-    width, height = mask.shape  # 2d array
-
-    # Use only half-size as output
-    width //= 2
-    height //= 2
-    assert offset <= min(width, height)
-
-    # Slice and recover shape
-    field_slice = field[offset : offset + width, offset : offset + height]
-    field_slice = field_slice.repeat(2, axis=0).repeat(2, axis=1)
-    mask_slice = mask[offset : offset + width, offset : offset + height]
     mask_slice = mask_slice.repeat(2, axis=0).repeat(2, axis=1)
 
     # Normalise masking values
@@ -124,9 +98,11 @@ def t_blur(
     sigma: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Blur the image by applying a Gaussian filter."""
+    assert 0 <= sigma <= 10
+    sigma_f = 1.0 + (sigma / 10)
     field = np.copy(field)
     for i in range(3):
-        field[:, :, i] = gaussian_filter(field[:, :, i], sigma=sigma)
+        field[:, :, i] = gaussian_filter(field[:, :, i], sigma=sigma_f)
     return field, mask
 
 
@@ -147,12 +123,11 @@ def t_gamma(
 TRANSLATION = [
     (t_linear, (0, 0)),
     (t_quartile, (0, 3)),
-    (t_offset, (0, 512)),  # Hardcoded 1024//2
 ]
 NOISE = [
     (t_linear, (0, 0)),
     (t_rotation, (0, 3)),
     (t_flip, (0, 2)),
-    (t_blur, (1, 3)),
+    (t_blur, (0, 10)),
     (t_gamma, (8, 12)),
 ]
