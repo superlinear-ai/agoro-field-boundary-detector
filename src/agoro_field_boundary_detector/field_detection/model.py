@@ -29,6 +29,7 @@ class FieldBoundaryDetector:
         model_path: Path,
         n_classes: int = 2,
         n_hidden: int = 256,
+        pretrained_resnet: bool = True,
         reset: bool = False,
     ):
         """
@@ -37,6 +38,7 @@ class FieldBoundaryDetector:
         :param model_path: Path under which the model is saved or will be saved
         :param n_classes: Number of the classes (outputs) the model should have
         :param n_hidden: Number of hidden layers used in the MaskRCNN predictor
+        :param pretrained_resnet: Use a pretrained ResNet backbone when creating a new Mask RCNN model
         :param reset: Create a new model instead of loading a previously existing one
         """
         self.path = model_path
@@ -44,7 +46,7 @@ class FieldBoundaryDetector:
         self.n_hidden = n_hidden
         self.model: Optional[torchvision.models.detection.maskrcnn_resnet50_fpn] = None
         if reset or not self.load():
-            self.create_instance_segmentation_model()
+            self.create_instance_segmentation_model(pretrained_resnet)
 
     def __call__(
         self,
@@ -96,10 +98,10 @@ class FieldBoundaryDetector:
         """Textual model representation."""
         return str(self)
 
-    def create_instance_segmentation_model(self) -> None:
+    def create_instance_segmentation_model(self, pretrained: bool = True) -> None:
         """Create an instance segmentation model."""
         # Load an instance segmentation model pre-trained on COCO
-        self.model = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True)
+        self.model = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=pretrained)
 
         # Replace the pre-trained head (box and mask predictor)
         self.model.roi_heads.box_predictor = FastRCNNPredictor(

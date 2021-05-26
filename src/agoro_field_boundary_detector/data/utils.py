@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 
 
 def load_annotations(path: Path) -> Dict[str, List[List[Tuple[int, int]]]]:
-    """Load in the annotations made by Label Studio."""
+    """Load in the annotations made by VGG."""
     with open(path, "r") as f:
         annotations = json.load(f)
 
@@ -17,21 +17,17 @@ def load_annotations(path: Path) -> Dict[str, List[List[Tuple[int, int]]]]:
         """Transform the Label Studio syntax to image-coordinates."""
         boundaries = []
         for value in values:
-            width, height = value["original_width"], value["original_height"]
-            points = value["value"]["points"]
-            points.append(points[0])  # Go full circle
-            boundaries.append(
-                [(round(width * a / 100), round(height * b / 100)) for a, b in points]
-            )
+            x = value["shape_attributes"]["all_points_x"]
+            x += [x[-1]]
+            y = value["shape_attributes"]["all_points_y"]
+            y += [y[-1]]
+            boundaries.append(list(zip(x, y)))
         return boundaries
 
     # Load in the boundaries by field
     field_annotations = {}
-    for annotation in annotations:
-        name = annotation["file_upload"]
-        if "_" in name:
-            name = name.split("_")[0] + ".png"
-        field_annotations[name] = _transform(annotation["annotations"][0]["result"])
+    for key, annotation in annotations.items():
+        field_annotations[key] = _transform(annotation["regions"])
     return field_annotations
 
 
