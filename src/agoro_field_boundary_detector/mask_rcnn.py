@@ -3,8 +3,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from src.agoro_field_boundary_detector.field_detection.dataset import Dataset
-from src.agoro_field_boundary_detector.field_detection.model import FieldBoundaryDetector
+from src.agoro_field_boundary_detector.field_detection import Dataset, FieldBoundaryDetector
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
