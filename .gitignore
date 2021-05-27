@@ -89,6 +89,5 @@ models/
 !models/__init__.py
 
 # Generated data
-data/augmented/fields/*.png
-data/augmented/masks/*.png
-data/test/*.png
+data/augmented
+data/test
