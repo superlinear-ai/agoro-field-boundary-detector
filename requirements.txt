@@ -1,0 +1,10 @@
+torch
+torchvision
+pycocotools
+earthengine-api
+geopandas
+opencv-python
+tqdm
+scikit-learn
+scipy
+folium

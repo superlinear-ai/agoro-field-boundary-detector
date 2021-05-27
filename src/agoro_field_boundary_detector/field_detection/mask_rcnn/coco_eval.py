@@ -11,7 +11,7 @@ import torch._six
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-import src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils as utils
+from src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils import all_gather
 
 
 class CocoEvaluator(object):
@@ -174,8 +174,8 @@ def convert_to_xywh(boxes: Any) -> Any:
 
 def merge(img_ids: Any, eval_imgs: Any) -> Any:
     """Merge the masking images."""
-    all_img_ids = utils.all_gather(img_ids)
-    all_eval_imgs = utils.all_gather(eval_imgs)
+    all_img_ids = all_gather(img_ids)
+    all_eval_imgs = all_gather(eval_imgs)
 
     merged_img_ids = []
     for p in all_img_ids:

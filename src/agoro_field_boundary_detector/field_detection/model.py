@@ -28,7 +28,7 @@ class FieldBoundaryDetector:
         self,
         model_path: Path,
         n_classes: int = 2,
-        n_hidden: int = 256,
+        n_hidden: int = 512,
         pretrained_resnet: bool = True,
         reset: bool = False,
     ):

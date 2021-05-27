@@ -9,7 +9,7 @@ import torchvision
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 
-import src.agoro_field_boundary_detector.field_detection.mask_rcnn.transforms as T
+from src.agoro_field_boundary_detector.field_detection.mask_rcnn.transforms import Compose
 
 
 class FilterAndRemapCocoCategories(object):
@@ -255,7 +255,7 @@ def get_coco(root: Any, image_set: Any, transforms: Any, mode: str = "instances"
 
     if transforms is not None:
         t.append(transforms)
-    transforms = T.Compose(t)
+    transforms = Compose(t)
 
     img_folder, ann_file = PATHS[image_set]
     img_folder = os.path.join(root, img_folder)

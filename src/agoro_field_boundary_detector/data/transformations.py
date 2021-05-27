@@ -1,5 +1,6 @@
 """Methods for image transformations/augmentations."""
-from typing import Callable, Tuple
+from random import choice
+from typing import Any, Callable, Tuple
 
 import cv2
 import numpy as np
@@ -119,11 +120,6 @@ def t_gamma(
     return field, mask
 
 
-# Enlist all augmentation options
-TRANSLATION = [
-    (t_linear, (0, 0)),
-    (t_quartile, (0, 3)),
-]
 NOISE = [
     (t_linear, (0, 0)),
     (t_rotation, (0, 3)),
@@ -131,3 +127,9 @@ NOISE = [
     (t_blur, (0, 10)),
     (t_gamma, (8, 12)),
 ]
+
+
+def get_random_noise() -> Tuple[Callable[..., Any], int]:
+    """Get a random noise augmentation."""
+    f, (a, b) = choice(NOISE)  # noqa S311
+    return f, choice(range(a, b + 1))  # type: ignore  # noqa S311

@@ -6,6 +6,7 @@ from typing import Any
 import numpy as np
 import torch
 import torch.utils.data
+from PIL import Image
 from torchvision.transforms import functional as F_vis
 
 
@@ -26,12 +27,9 @@ class Dataset(torch.utils.data.Dataset):  # type: ignore
     def __getitem__(self, idx: int) -> Any:
         """Get the item at the given index from the dataset."""
         # load image and mask under specified index
-        with open(self.fields_path / f"{self.tags[idx]}.npy", "rb") as f:
-            field = np.load(f)
-        with open(self.masks_path / f"{self.tags[idx]}.npy", "rb") as f:
-            mask = np.load(f)
+        field = np.array(Image.open(self.fields_path / f"{self.tags[idx]}.png"))
+        mask = np.array(Image.open(self.masks_path / f"{self.tags[idx]}.png"))
 
-        mask = np.array(mask)
         # instances are encoded as different colors
         obj_ids = np.unique(mask)
         # first id is the background, so remove it

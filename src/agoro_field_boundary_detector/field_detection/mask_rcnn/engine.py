@@ -7,10 +7,15 @@ from typing import Any
 import torch
 import torchvision.models.detection.mask_rcnn
 
-import src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils as utils
 from src.agoro_field_boundary_detector.field_detection.mask_rcnn.coco_eval import CocoEvaluator
 from src.agoro_field_boundary_detector.field_detection.mask_rcnn.coco_utils import (
     get_coco_api_from_dataset,
+)
+from src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils import (
+    MetricLogger,
+    SmoothedValue,
+    reduce_dict,
+    warmup_lr_scheduler,
 )
 
 
@@ -19,8 +24,8 @@ def train_one_epoch(
 ) -> Any:
     """Train for a single epoch."""
     model.train()
-    metric_logger = utils.MetricLogger(delimiter="  ")
-    metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}"))
+    metric_logger = MetricLogger(delimiter="  ")
+    metric_logger.add_meter("lr", SmoothedValue(window_size=1, fmt="{value:.6f}"))
     header = f"Epoch: [{epoch}]"
 
     lr_scheduler = None
@@ -28,7 +33,7 @@ def train_one_epoch(
         warmup_factor = 1.0 / 1000
         warmup_iters = min(1000, len(data_loader) - 1)
 
-        lr_scheduler = utils.warmup_lr_scheduler(optimizer, warmup_iters, warmup_factor)
+        lr_scheduler = warmup_lr_scheduler(optimizer, warmup_iters, warmup_factor)
 
     for images, targets in metric_logger.log_every(data_loader, print_freq, header):
         images = [image.to(device) for image in images]
@@ -39,7 +44,7 @@ def train_one_epoch(
         losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = utils.reduce_dict(loss_dict)
+        loss_dict_reduced = reduce_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
 
         loss_value = losses_reduced.item()  # type: ignore
@@ -83,7 +88,7 @@ def evaluate(model: Any, data_loader: Any, device: Any) -> Any:
     torch.set_num_threads(1)  # type: ignore
     cpu_device = torch.device("cpu")  # type: ignore
     model.eval()
-    metric_logger = utils.MetricLogger(delimiter="  ")
+    metric_logger = MetricLogger(delimiter="  ")
     header = "Test:"
 
     coco = get_coco_api_from_dataset(data_loader.dataset)
