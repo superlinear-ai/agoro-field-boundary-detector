@@ -10,6 +10,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 def train(
     model: FieldBoundaryDetector,
+    path: Path,
     n_epoch: int = 20,
     batch_size: int = 1,
     n_workers: int = 0,
@@ -18,7 +19,7 @@ def train(
     patience: int = 3,
 ) -> None:
     """Train the model."""
-    dataset = Dataset(path=Path(__file__).parent / "../../data/augmented")
+    dataset = Dataset(path=path)
     model.train(
         dataset=dataset,
         n_epoch=n_epoch,
@@ -32,6 +33,7 @@ def train(
 
 def evaluate(
     model: FieldBoundaryDetector,
+    path: Path,
     batch_size: int = 1,
     n_workers: int = 0,
     n_show: int = 5,
@@ -40,7 +42,7 @@ def evaluate(
     """Evaluate the model."""
     if write_path is None:
         write_path = Path.cwd()
-    dataset = Dataset(path=Path(__file__).parent / "../../data/test")
+    dataset = Dataset(path=path)
     model.test(
         dataset=dataset,
         batch_size=batch_size,
@@ -58,7 +60,11 @@ if __name__ == "__main__":
         "--model-path", default=Path(__file__).parent / "../../models/mask_rcnn", type=str
     )
     parser.add_argument("--train", default=0, type=int)
+    parser.add_argument(
+        "--train-path", default=Path(__file__).parent / "../../data/augmented", type=str
+    )
     parser.add_argument("--test", default=1, type=int)
+    parser.add_argument("--test-path", default=Path(__file__).parent / "../../data/test", type=str)
     args = parser.parse_args()
 
     # Load in the model
@@ -68,9 +74,12 @@ if __name__ == "__main__":
     if args.train:
         train(
             model=field_detector,
+            path=args.train_path,
         )
     # Test, if requested
     if args.test:
         evaluate(
             model=field_detector,
+            path=args.test_path,
+            write_path=Path(__file__).parent / "../../data",
         )

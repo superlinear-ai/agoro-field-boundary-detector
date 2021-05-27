@@ -29,21 +29,24 @@ class FieldBoundaryDetector:
         model_path: Path,
         n_classes: int = 2,
         n_hidden: int = 512,
+        thr: float = 0.5,
         pretrained_resnet: bool = True,
         reset: bool = False,
-    ):
+    ) -> None:
         """
         Initialise the Field Boundary Detector model, either by loading in previous version or creating a new one.
 
         :param model_path: Path under which the model is saved or will be saved
         :param n_classes: Number of the classes (outputs) the model should have
         :param n_hidden: Number of hidden layers used in the MaskRCNN predictor
+        :param thr: Certainty threshold when defining masks (pixel-level)
         :param pretrained_resnet: Use a pretrained ResNet backbone when creating a new Mask RCNN model
         :param reset: Create a new model instead of loading a previously existing one
         """
         self.path = model_path
         self.n_classes = n_classes
         self.n_hidden = n_hidden
+        self.thr = thr
         self.model: Optional[torchvision.models.detection.maskrcnn_resnet50_fpn] = None
         if reset or not self.load():
             self.create_instance_segmentation_model(pretrained_resnet)
@@ -51,7 +54,6 @@ class FieldBoundaryDetector:
     def __call__(
         self,
         im: np.ndarray,
-        thr: float = 0.8,
     ) -> List[Tuple[int, int]]:
         """
         Predict the polygon of the mask covering the image's center pixel.
@@ -62,10 +64,7 @@ class FieldBoundaryDetector:
         :param im_path: Path indicating which field to check
         """
         # Make masking predictions
-        mask = self.get_mask(
-            im=im,
-            thr=thr,
-        )
+        mask = self.get_mask(im=im)
 
         # Extract polygon of center pixel, if exists
         center = im.shape[0] // 2, im.shape[1] // 2
@@ -80,14 +79,10 @@ class FieldBoundaryDetector:
     def get_all_polygons(
         self,
         im: np.ndarray,
-        thr: float = 0.8,
     ) -> List[List[Tuple[int, int]]]:
         """TODO: Documentation."""
         # Make masking predictions
-        mask = self.get_mask(
-            im=im,
-            thr=thr,
-        )
+        mask = self.get_mask(im=im)
         return mask_to_polygons(mask)  # type: ignore
 
     def __str__(self) -> str:
@@ -221,7 +216,6 @@ class FieldBoundaryDetector:
         # Revert back to best-performing model and delete temporal files
         self.model = torch.load(temp_folder / f"{best_epoch}")  # type: ignore
         rmtree(temp_folder)
-        temp_folder.unlink(missing_ok=True)
         self.save()
 
     def test(
@@ -243,6 +237,7 @@ class FieldBoundaryDetector:
         """
         if n_show:
             assert write_path is not None
+            (write_path / f"{self}").mkdir(parents=True, exist_ok=True)
 
         # Move model to the right device and ensure evaluation mode
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
@@ -270,8 +265,7 @@ class FieldBoundaryDetector:
         time = datetime.now().strftime("%Y_%m_%d_%H_%M")
         for idx in range(min(len(dataset), n_show)):
             img, _ = dataset[idx]
-            mask = self.get_mask(im=img)
-            polygons = mask_to_polygons(mask)
+            polygons = self.get_all_polygons(img)
             img_tc = img.mul(255).permute(1, 2, 0).byte().numpy()
             plt.figure(figsize=(5, 5))
             plt.imshow(img_tc, interpolation="nearest")
@@ -286,15 +280,13 @@ class FieldBoundaryDetector:
     def get_mask(
         self,
         im: Union[np.ndarray, torch.Tensor],
-        thr: float = 0.8,
-        size_thr: float = 0.003,
-        overlap_thr: float = 0.8,
+        size_thr: float = 0.001,
+        overlap_thr: float = 0.9,
     ) -> np.ndarray:
         """
         Predict a layered mask for the given image.
 
         :param im: Image to make the prediction on
-        :param thr: Threshold value to round mask to binary
         :param size_thr: Proportion of the image a mask must occupy in order to be valid
         :param overlap_thr: Proportion of the image that does not overlap in order to be valid
         :return: Image masks
@@ -316,11 +308,11 @@ class FieldBoundaryDetector:
             result = np.zeros(im_t.shape[1:], dtype=np.int8)
             for mask in prediction["masks"]:
                 mask = mask[0].cpu().numpy()
-                mask[mask >= thr] = 1  # Ensure binary mask
-                mask[mask < thr] = 0
+                mask[mask >= self.thr] = 1  # Ensure binary mask
+                mask[mask < self.thr] = 0
                 mask = mask.astype(np.int8)
 
-                # Ignore masks if they occupy less than 0.3% of the image
+                # Ignore masks if they occupy less than 0.1% of the image
                 if mask.sum() / len(mask.flatten()) < size_thr:
                     continue
 

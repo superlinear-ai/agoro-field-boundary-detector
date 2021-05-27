@@ -91,3 +91,4 @@ models/
 # Generated data
 data/augmented
 data/test
+data/test_results
