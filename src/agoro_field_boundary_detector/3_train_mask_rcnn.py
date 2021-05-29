@@ -18,7 +18,18 @@ def train(
     early_stop: bool = True,
     patience: int = 3,
 ) -> None:
-    """Train the model."""
+    """
+    Train the model.
+
+    :param model: Mask R-CNN model to train
+    :param path: Path where data is stored used for training
+    :param n_epoch: Number of training epochs
+    :param batch_size: Batch-size used during training
+    :param n_workers: Number of workers used to load in the training data every batch
+    :param val_frac: Fraction of the training data dedicated for validation
+    :param early_stop: Whether or not to use early stopping
+    :param patience: Early stopping patience
+    """
     dataset = Dataset(path=path)
     model.train(
         dataset=dataset,
@@ -36,10 +47,19 @@ def evaluate(
     path: Path,
     batch_size: int = 1,
     n_workers: int = 0,
-    n_show: int = 10,
+    n_show: int = 0,
     write_path: Optional[Path] = None,
 ) -> None:
-    """Evaluate the model."""
+    """
+    Evaluate the model.
+
+    :param model: Mask R-CNN model to train
+    :param path: Path where data is stored used for training
+    :param batch_size: Batch-size used during training
+    :param n_workers: Number of workers used to load in the training data every batch
+    :param n_show: Number of test-images to show the results for (eye-ball evaluation)
+    :param write_path: Path to which the eye-ball evaluated test results are written to
+    """
     if write_path is None:
         write_path = Path.cwd()
     dataset = Dataset(path=path)
@@ -81,5 +101,6 @@ if __name__ == "__main__":
         evaluate(
             model=field_detector,
             path=args.test_path,
+            n_show=10,
             write_path=Path(__file__).parent / "../../data/test_results",
         )

@@ -13,12 +13,12 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from torchvision.transforms import functional as F_vis
 
-from src.agoro_field_boundary_detector.data import mask_to_polygons
 from src.agoro_field_boundary_detector.field_detection.dataset import Dataset
 from src.agoro_field_boundary_detector.field_detection.mask_rcnn.engine import (
     evaluate,
     train_one_epoch,
 )
+from src.agoro_field_boundary_detector.field_detection.utils import mask_to_polygons
 
 
 class FieldBoundaryDetector:
@@ -108,6 +108,7 @@ class FieldBoundaryDetector:
             self.n_hidden,
             self.n_classes,
         )
+        print("Created a new (untrained) FieldBoundaryDetector model")
 
     def train(
         self,
@@ -212,7 +213,7 @@ class FieldBoundaryDetector:
                 )
 
             # Stop if validation F1 starts to decrease
-            if early_stop and last_improvement > patience:
+            if early_stop and last_improvement >= patience:
                 break
 
         # Revert back to best-performing model and delete temporal files

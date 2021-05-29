@@ -1,5 +1,4 @@
 """Main tasks."""
-
 import logging
 import os
 
@@ -15,16 +14,6 @@ def lint(c):
     logger.info("Running pre-commit checks...")
     c.run("pre-commit run --all-files --color always", pty=True)
     c.run("safety check --full-report", warn=True, pty=True)
-
-
-@task
-def test(c):
-    """Test this package."""
-    logger.info("Running Pytest...")
-    c.run(
-        "env PYTHONPATH=src pytest --cov=src --cov-report term-missing --cov-report html:coverage/ tests",
-        pty=True,
-    )  # PYTHONPATH=src is needed for CI
 
 
 @task
@@ -44,9 +33,3 @@ def docs(c, browser=False, output_dir="site"):
     else:
         c.run(f"portray as_html --output_dir {output_dir} --overwrite", pty=True)
         logger.info("Package documentation available at ./site/index.html")
-
-
-@task
-def bump(c, part, dry_run=False):
-    """Bump the major, minor, patch, or post-release part of this package's version."""
-    c.run(f"bump2version {'--dry-run --verbose ' + part if dry_run else part}", pty=True)

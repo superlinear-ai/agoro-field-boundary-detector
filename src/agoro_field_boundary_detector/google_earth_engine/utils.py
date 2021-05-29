@@ -100,3 +100,27 @@ def get_dlat_dlng(
     dlat = dy / r * 180 / pi
     dlng = dx / (r * cos(pi * lat / 180)) * 180 / pi
     return dlat, dlng
+
+
+def adjust_polygon(
+    coordinate: Tuple[float, float],
+    center: Tuple[int, int],
+    polygon: List[Tuple[int, int]],
+) -> List[Tuple[float, float]]:
+    """
+    Convert the image-polygon to a polygon in (lat,lng) coordinates.
+
+    :param coordinate: Center coordinate (lag,lng) of the image
+    :param center: Center pixel coordinate of the image
+    :param polygon: Polygon to adjust in pixel coordinates
+    """
+    offsets = []
+    for x, y in polygon:
+        offsets.append(
+            get_dlat_dlng(
+                lat=coordinate[0],
+                dx=2 * (x - center[0]),
+                dy=-2 * (y - center[1]),
+            )
+        )
+    return [(coordinate[0] + a, coordinate[1] + b) for a, b in offsets]

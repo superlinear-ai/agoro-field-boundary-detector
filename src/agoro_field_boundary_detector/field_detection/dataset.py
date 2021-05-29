@@ -10,7 +10,6 @@ from PIL import Image
 from torchvision.transforms import functional as F_vis
 
 
-# TODO: Add to data/ folder
 class Dataset(torch.utils.data.Dataset):  # type: ignore
     """Dataset used to train the Mask RCNN model."""
 
@@ -30,15 +29,14 @@ class Dataset(torch.utils.data.Dataset):  # type: ignore
         field = np.array(Image.open(self.fields_path / f"{self.tags[idx]}.png"))
         mask = np.array(Image.open(self.masks_path / f"{self.tags[idx]}.png"))
 
-        # instances are encoded as different colors
-        obj_ids = np.unique(mask)
-        # first id is the background, so remove it
+        # Mask are identified by their unique ID (zero for background)
+        obj_ids = np.unique(mask)  # Sorted
         obj_ids = obj_ids[1:]
 
-        # split the color-encoded mask into a set of binary masks
+        # Split the index-encoded mask into a set of binary masks
         masks = mask == obj_ids[:, None, None]
 
-        # get bounding box coordinates for each mask
+        # Get bounding box (target) coordinates for each mask
         num_objs = len(obj_ids)
         boxes = []
         for i in range(num_objs):
@@ -48,24 +46,16 @@ class Dataset(torch.utils.data.Dataset):  # type: ignore
             ymin = np.min(pos[0])
             ymax = np.max(pos[0])
             boxes.append([xmin, ymin, xmax, ymax])
-
         boxes = torch.as_tensor(boxes, dtype=torch.float32)  # type: ignore
-        # there is only one class
-        labels = torch.ones((num_objs,), dtype=torch.int64)  # type: ignore
-        masks = torch.as_tensor(masks, dtype=torch.uint8)  # type: ignore
 
-        image_id = torch.tensor([idx])  # type: ignore
-        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])  # type: ignore
-        # suppose all instances are not crowd
-        iscrowd = torch.zeros((num_objs,), dtype=torch.int64)  # type: ignore
-
+        # Create target-response
         target = {
             "boxes": boxes,
-            "labels": labels,
-            "masks": masks,
-            "image_id": image_id,
-            "area": area,
-            "iscrowd": iscrowd,
+            "labels": torch.ones((num_objs,), dtype=torch.int64),  # type: ignore
+            "masks": torch.as_tensor(masks, dtype=torch.uint8),  # type: ignore
+            "image_id": torch.tensor([idx]),  # type: ignore
+            "area": (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0]),  # type: ignore
+            "iscrowd": torch.zeros((num_objs,), dtype=torch.int64),  # type: ignore
         }
         return F_vis.to_tensor(field), target
 

@@ -1,10 +1,10 @@
 """Setup module for this Python package."""
-
 import os
 import re
 
 from setuptools import find_packages, setup
 
+# TODO: Manually add dependencies here
 # Fill `install_requires` with packages in environment.run.yml.
 install_requires = []
 with open(os.path.join(os.path.dirname(__file__), "environment.run.yml")) as spec:
