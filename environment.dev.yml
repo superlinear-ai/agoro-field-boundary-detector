@@ -21,7 +21,6 @@ dependencies:
   - mypy
   - pip
   - pre-commit
-  - proselint
   - pydantic
   - pydocstyle
   - safety

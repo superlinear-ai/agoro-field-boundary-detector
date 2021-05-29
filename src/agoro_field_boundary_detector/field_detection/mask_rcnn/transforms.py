@@ -1,4 +1,4 @@
-"""Transformation methods and classes."""
+"""Transformation methods and classes, code from https://github.com/pytorch/vision."""
 from typing import Any
 
 from torchvision.transforms import functional as F
@@ -25,8 +25,3 @@ class ToTensor(object):
         """Transform image to PyTorch tensor."""
         image = F.to_tensor(image)
         return image, target
-
-
-def get_transform() -> Any:
-    """Create the transformation function."""
-    return Compose([ToTensor()])

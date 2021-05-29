@@ -13,7 +13,26 @@ To install this package in your environment, run:
 pip install git+https://github.com/radix-ai/agoro-field-boundary-detector.git
 ```
 
-## Contributing
+## Usage
+```python
+from agoro_field_boundary_detector import FieldBoundaryDetectorInterface
+
+# Load in the model, will start GEE session
+model = FieldBoundaryDetectorInterface(model_path=...)
+
+# Make the prediction
+pred = model(lat=39.6679328199836, lng=-95.4287818841267)
+
+# Result
+# [
+#     (39.683761135289785, -95.4369042849299),
+#     (39.6837431689841, -95.43695096539429), 
+#     ...
+#     (39.683761135289785, -95.4368809446977), 
+#     (39.683761135289785, -95.4369042849299),
+# ]
+```
+
 
 ### Development environment setup
 

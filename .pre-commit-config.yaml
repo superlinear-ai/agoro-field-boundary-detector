@@ -64,11 +64,6 @@ repos:
         language: system
         types: [python]
         exclude: ".*_depr[.]py"
-      - id: proselint
-        name: proselint
-        entry: env XDG_CONFIG_HOME=.vscode proselint
-        language: system
-        files: \.(md|rst)$
   - repo: https://github.com/radix-ai/auto-smart-commit
     rev: v1.0.2
     hooks:

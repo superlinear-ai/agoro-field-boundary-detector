@@ -1,4 +1,4 @@
-"""Configure presets."""
+"""Configure presets, code from https://github.com/pytorch/vision."""
 from typing import Any
 
 import src.agoro_field_boundary_detector.field_detection.mask_rcnn.transforms as T

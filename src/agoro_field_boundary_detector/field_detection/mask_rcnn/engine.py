@@ -1,4 +1,4 @@
-"""Main engine of the Mask RCNN."""
+"""Main engine of the Mask RCNN, code from https://github.com/pytorch/vision."""
 import math
 import sys
 import time

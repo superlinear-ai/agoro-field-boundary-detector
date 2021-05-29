@@ -1,4 +1,4 @@
-"""COCO utilisation classes and methods."""
+"""COCO utilisation classes and methods, code from https://github.com/pytorch/vision."""
 import copy
 import os
 from typing import Any, Dict

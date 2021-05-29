@@ -58,10 +58,8 @@ class FieldBoundaryDetector:
         """
         Predict the polygon of the mask covering the image's center pixel.
 
-        # TODO: Update
-
-        :param model: Mask-RCNN model used to predict field boundaries
-        :param im_path: Path indicating which field to check
+        :param im: Image for which the model will make its prediction
+        :return: Field polygon as a list of pixel-coordinates, empty list if no field recognised
         """
         # Make masking predictions
         mask = self.get_mask(im=im)
@@ -80,7 +78,7 @@ class FieldBoundaryDetector:
         self,
         im: np.ndarray,
     ) -> List[List[Tuple[int, int]]]:
-        """TODO: Documentation."""
+        """Extract all the detected field-polygons (in pixel coordinates) from the given image."""
         # Make masking predictions
         mask = self.get_mask(im=im)
         return mask_to_polygons(mask)  # type: ignore

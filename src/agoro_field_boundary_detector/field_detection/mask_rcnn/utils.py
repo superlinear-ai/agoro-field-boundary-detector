@@ -1,4 +1,4 @@
-"""Utilisation classes and methods."""
+"""Utilisation classes and methods, code from https://github.com/pytorch/vision."""
 import datetime
 import errno
 import os

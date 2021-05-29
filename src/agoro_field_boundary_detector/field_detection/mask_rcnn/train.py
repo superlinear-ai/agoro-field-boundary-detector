@@ -1,4 +1,4 @@
-"""PyTorch Detection Training."""
+"""PyTorch Detection Training, code from https://github.com/pytorch/vision."""
 import datetime
 import os
 import time

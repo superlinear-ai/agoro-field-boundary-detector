@@ -1,4 +1,8 @@
-"""Group images by aspect ratio to improve training speed by clustering same-ratio images in the same batch."""
+"""
+Group images by aspect ratio to improve training speed by clustering same-ratio images in the same batch.
+
+This code is from https://github.com/pytorch/vision.
+"""
 import bisect
 import copy
 import math
