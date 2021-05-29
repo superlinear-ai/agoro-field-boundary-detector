@@ -36,7 +36,7 @@ def evaluate(
     path: Path,
     batch_size: int = 1,
     n_workers: int = 0,
-    n_show: int = 5,
+    n_show: int = 10,
     write_path: Optional[Path] = None,
 ) -> None:
     """Evaluate the model."""
@@ -81,5 +81,5 @@ if __name__ == "__main__":
         evaluate(
             model=field_detector,
             path=args.test_path,
-            write_path=Path(__file__).parent / "../../data",
+            write_path=Path(__file__).parent / "../../data/test_results",
         )

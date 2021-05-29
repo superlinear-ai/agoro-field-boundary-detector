@@ -201,7 +201,9 @@ class FieldBoundaryDetector:
             # Check if improvement made, act accordingly
             if best_f1 > f1:
                 last_improvement += 1
+                print(f" ! No improvement for {last_improvement} epochs")
             else:
+                last_improvement = 0
                 best_f1 = f1
                 best_epoch = epoch
                 torch.save(
@@ -237,7 +239,7 @@ class FieldBoundaryDetector:
         """
         if n_show:
             assert write_path is not None
-            (write_path / f"{self}").mkdir(parents=True, exist_ok=True)
+            write_path.mkdir(parents=True, exist_ok=True)
 
         # Move model to the right device and ensure evaluation mode
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
@@ -267,7 +269,7 @@ class FieldBoundaryDetector:
             img, _ = dataset[idx]
             polygons = self.get_all_polygons(img)
             img_tc = img.mul(255).permute(1, 2, 0).byte().numpy()
-            plt.figure(figsize=(5, 5))
+            plt.figure(figsize=(10, 10))
             plt.imshow(img_tc, interpolation="nearest")
             for polygon in polygons:
                 x, y = zip(*polygon)
@@ -281,7 +283,7 @@ class FieldBoundaryDetector:
         self,
         im: Union[np.ndarray, torch.Tensor],
         size_thr: float = 0.001,
-        overlap_thr: float = 0.9,
+        overlap_thr: float = 0.8,
     ) -> np.ndarray:
         """
         Predict a layered mask for the given image.
@@ -316,7 +318,7 @@ class FieldBoundaryDetector:
                 if mask.sum() / len(mask.flatten()) < size_thr:
                     continue
 
-                # Ignore masks that mainly (80% or more) overlap with previously detected masks
+                # Ignore masks that mainly (90% or more) overlap with previously detected masks
                 previous = np.clip(result, a_min=0, a_max=1)
                 if (mask * previous).sum() > (1 - overlap_thr) * mask.sum():
                     continue
