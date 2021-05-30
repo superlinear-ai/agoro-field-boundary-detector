@@ -8,10 +8,8 @@ from .google_earth_engine import (
     to_polygon,
 )
 from .main import FieldBoundaryDetectorInterface
-from .version import __version__
 
 __all__ = [
-    "__version__",
     "FieldBoundaryDetector",
     "Dataset",
     "FieldBoundaryDetectorInterface",

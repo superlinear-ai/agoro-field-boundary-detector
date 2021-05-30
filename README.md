@@ -2,8 +2,6 @@
 
 Detect field boundaries using satellite imagery.
 
-TO-DO: Rewrite whole readme
-TO-DO: remove deprecated code
 
 ## Installation
 
@@ -12,6 +10,7 @@ To install this package in your environment, run:
 ```bash
 pip install git+https://github.com/radix-ai/agoro-field-boundary-detector.git
 ```
+
 
 ## Usage
 ```python
@@ -32,6 +31,26 @@ pred = model(lat=39.6679328199836, lng=-95.4287818841267)
 #     (39.683761135289785, -95.4369042849299),
 # ]
 ```
+
+
+## Development
+
+### Setup Environment
+
+### Exporting images
+
+### Data Annotation
+
+### Data Augmentation
+
+### Model Training
+
+### Model inference
+
+
+
+
+
 
 
 ### Development environment setup
