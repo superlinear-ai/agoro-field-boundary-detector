@@ -4,6 +4,7 @@ from agoro_field_boundary_detector.google_earth_engine.session import start as s
 from agoro_field_boundary_detector.google_earth_engine.utils import (
     adjust_polygon,
     create_bounding_box,
+    create_polygon,
     to_polygon,
 )
 from agoro_field_boundary_detector.google_earth_engine.visualisation import (
@@ -21,4 +22,5 @@ __all__ = [
     "show_polygon",
     "show_point",
     "adjust_polygon",
+    "create_polygon",
 ]

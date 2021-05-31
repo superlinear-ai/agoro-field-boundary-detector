@@ -100,8 +100,8 @@ def adjust_polygon(
         offsets.append(
             get_dlat_dlng(
                 lat=coordinate[0],
-                dx=2 * (x - center[0]),
-                dy=-2 * (y - center[1]),
+                dx=x - center[0],
+                dy=-y + center[1],
             )
         )
     return [(coordinate[0] + a, coordinate[1] + b) for a, b in offsets]

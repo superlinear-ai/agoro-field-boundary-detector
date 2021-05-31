@@ -64,7 +64,7 @@ class FieldBoundaryDetectorInterface:
         # Convert polygon's pixel-coordinates to (lat,lng) coordinates
         polygon_adj = adjust_polygon(
             coordinate=(lat, lng),
-            center=(1024, 1024),
+            center=(512, 512),
             polygon=polygon,
         )
 
