@@ -1,30 +1,36 @@
 """Setup module for this Python package."""
-import os
-import re
+import pathlib
 
 from setuptools import find_packages, setup
 
-# TODO: Manually add dependencies here
-# Fill `install_requires` with packages in environment.run.yml.
-install_requires = []
-with open(os.path.join(os.path.dirname(__file__), "environment.run.yml")) as spec:
-    for line in spec:
-        match = re.search(r"^\s*-\s+(?P<n>.+)(?P<v>(?:~=|==|!=|<=|>=|<|>|===|@)[^\s\n\r]+)", line)
-        if match and match.group("n") not in ("pip", "python"):
-            # Support git+ssh://git@.../pkg.git@vx.y.z packages, see stackoverflow.com/a/54794506.
-            prefix = (
-                match.group("n").split("/")[-1].replace(".git", "") + " @ "
-                if match.group("n").startswith("git+")
-                else ""
-            )
-            install_requires.append(prefix + match.group("n") + match.group("v"))
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
+
+# The text of the README file
+README = (HERE / "README.md").read_text()
+
+INSTALL_REQUIRES = [
+    "tqdm",
+    "torch~=1.8.1",
+    "torchvision~=0.9.1",
+    "pycocotools~=2.0.2",
+    "earthengine-api~=0.1.267",
+    "geopandas~=0.9.0",
+    "opencv-python~=4.5.2.52",
+]
 
 setup(
     name="agoro_field_boundary_detector",
     version="0.0.0",
     description="Detect field boundaries using satellite imagery.",
+    long_description=README,
+    long_description_content_type="text/markdown",
+    url="https://github.com/radix-ai/agoro-field-boundary-detector",
+    author="Radix",
+    author_email="developers@radix.ai",
     package_dir={"": "src"},
-    packages=find_packages(where="src"),
-    install_requires=install_requires,
+    packages=find_packages(where="src", exclude=("data", "models", "notebooks", "tasks")),
+    license="LICENSE",
+    install_requires=INSTALL_REQUIRES,
     include_package_data=True,
 )

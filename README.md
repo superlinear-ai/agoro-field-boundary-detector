@@ -4,7 +4,6 @@ Detect field boundaries using satellite imagery.
 
 
 ## Installation
-
 To install this package in your environment, run:
 
 ```bash
@@ -13,6 +12,14 @@ pip install git+https://github.com/radix-ai/agoro-field-boundary-detector.git
 
 
 ## Usage
+To use the field boundary detector model together with the Google Earth Engine (model's input data), use the `FieldBoundaryDetectorInterface` class.
+This class provides an interface on top of the field boundary detector model by adding these next steps:
+1. Translate a `(latitude,longitude)` coordinate into an image extracted from GEE 
+2. Predict the field-boundary of the field overlapping with the provided coordinate (image's center pixel)
+3. Translate the extracted polygon from pixel-coordinates to geographical `(lat,lng)` coordinates
+
+This interface also allows you to easily make predictions with a higher certainty, by changing the default `0.5` certainty in the class' call.
+
 ```python
 from agoro_field_boundary_detector import FieldBoundaryDetectorInterface
 
@@ -21,7 +28,41 @@ model = FieldBoundaryDetectorInterface(model_path=...)
 
 # Make the prediction
 pred = model(lat=39.6679328199836, lng=-95.4287818841267)
+# Result
+# [
+#     (39.683761135289785, -95.4369042849299),
+#     (39.6837431689841, -95.43695096539429), 
+#     ...
+#     (39.683761135289785, -95.4368809446977), 
+#     (39.683761135289785, -95.4369042849299)
+# ]
 
+# Make the prediction with a higher certainty threshold
+pred_certain = model(lat=39.6679328199836, lng=-95.4287818841267, thr=0.9)
+# Result
+# [
+#     (39.68350960701023, -95.43681092400112), 
+#     (39.683491640704545, -95.43685760446552), 
+#     ...
+#     (39.683491640704545, -95.43678758376893), 
+#     (39.68350960701023, -95.43681092400112)
+# ]
+
+```
+
+If you want to use the field boundary detector model in separation (i.e. without GEE), use the `FieldBoundaryDetector` class.
+This class will predict pixel-level polygon boundaries when fed an image. It also enables you to fetch all other polygons found in this image as well. 
+
+```python
+import numpy as np
+from agoro_field_boundary_detector import FieldBoundaryDetector
+
+# Load in the model, will start GEE session
+model = FieldBoundaryDetector(model_path=...)
+
+# Make the prediction
+im = np.asarray(...)
+single_polygon = model(im)
 # Result
 # [
 #     (39.683761135289785, -95.4369042849299),
@@ -30,105 +71,52 @@ pred = model(lat=39.6679328199836, lng=-95.4287818841267)
 #     (39.683761135289785, -95.4368809446977), 
 #     (39.683761135289785, -95.4369042849299),
 # ]
+
+# Get all polygons found in the image
+im = np.asarray(...)
+all_polygons = model.get_all_polygons(im)
+# Result
+# [[
+#     (39.683761135289785, -95.4369042849299),
+#     ...
+#     (39.683761135289785, -95.4369042849299)
+# ],
+# ...
+# [
+#     (39.383761135289785, -95.1368809446977), 
+#     ...
+#     (39.383761135289785, -95.1368809446977)
+# ]]
 ```
 
 
 ## Development
 
 ### Setup Environment
+In order to initialise your environment properly, run the following command in the root of this project:
+```shell
+tasks/init.sh
+```
+This creates a conda environment with all the necessary dependencies (run and development dependencies). 
+
+If you only need the run dependencies, use:
+```shell
+pip install .
+```
 
 ### Exporting images
+A script on how to export Google Earth Engine images - more specifically those from the National Agriculture Imagery Program dataset - can be found under `i_export_field_data.py`.
+This script utilises the functions and classes found in the `google_earth_engine` subfolder.
+Note that you need to sign-up for Google Earth Engine first ([here](https://earthengine.google.com/signup/)), before you can export images from it.
 
 ### Data Annotation
-
-### Data Augmentation
+A script on how to augment the extracted images can be found under `ii_augment_data.py`.
+This script utilises the functions and classes found in the `augmentation` subfolder.
 
 ### Model Training
+A script on how to train, evaluate, and infer the field boundary detector model can be found under `iii_train_mask_rcnn.py`.
+This script utilises the function and classes found in the `field_detection` subfolder.
 
 ### Model inference
-
-
-
-
-
-
-
-### Development environment setup
-
-<details>
-<summary>Once per machine</summary>
-
-1. [Generate an SSH key](https://docs.gitlab.com/ee/ssh/README.html#generating-a-new-ssh-key-pair) for GitLab, [add the SSH key to GitLab](https://docs.gitlab.com/ee/ssh/README.html#adding-an-ssh-key-to-your-gitlab-account), and [add the SSH key to your authentication agent](https://docs.gitlab.com/ee/ssh/README.html#working-with-non-default-ssh-key-pair-paths).
-2. Install [Docker](https://www.docker.com/get-started).
-3. Install [VS Code](https://code.visualstudio.com/).
-4. Install [VS Code's Remote-Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-5. Install [Fira Code](https://github.com/tonsky/FiraCode/wiki/VS-Code-Instructions).
-
-</details>
-
-<details open>
-<summary>Once per repository</summary>
-
-You can set up your development environment as a self-contained [development container](https://code.visualstudio.com/docs/remote/containers) with a single step. In VS Code, press <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd>, select _Remote-Containers: Clone Repository in Container Volume.. and enter:
-
-```
-git@gitlab.com:radix-ai.git
-```
-
-Alternatively, if you prefer to install your environment locally, run `./tasks/init.sh` from VS Code's Terminal.
-</details>
-
-### Common tasks
-
-<details>
-<summary>Activating the Python environment</summary>
-
-1. Open any Python file in the project to load VS Code's Python extension.
-2. Open an integrated Terminal with <kbd>⌃</kbd> + <kbd>~</kbd> and you should see that the conda environment `agoro-field-boundary-detector-env` is active.
-3. Now you're ready to run any of tasks listed by `invoke --list`.
-
-</details>
-
-<details>
-<summary>Running and debugging tests</summary>
-
-1. Activate the Python environment.
-2. If you don't see _⚡ Run tests_ in the blue bar, run <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd> > _Python: Discover Tests_. Optionally debug the output in _View_ > _Output_ > _Python Test Log_ in case this step fails.
-3. Go to any test function in `src/tests/pytest`.
-4. Optional: put a breakpoint 🔴 next to the line number where you want to stop.
-5. Click on _Run Test_ or _Debug Test_ above the test you want to debug.
-
-</details>
-
-<details>
-<summary>Updating the Cookiecutter scaffolding</summary>
-
-1. Activate the Python environment.
-2. Run `cruft check` to check for updates.
-3. Run `cruft update` to update to the latest scaffolding.
-4. Address failed merges in any `.rej` files.
-
-</details>
-
-<details>
-<summary>Contributing code</summary>
-
-You are responsible for the full lifecycle to get your code integerated into `master`:
-
-1. Create a new branch from `master`.<sup>1</sup>
-2. Push your branch and create an MR with prefix `WIP:`.<sup>2,3</sup>
-3. Rebase on `master` with `git pull --rebase origin master` before requesting a review.
-4. Request a review on Slack. [Mention someone](https://slack.com/intl/en-be/help/articles/205240127-Use-mentions-in-Slack#mention-someone) if no one takes action.
-5. Address the comments and ask the reviewer to validate that they are resolved. Repeat until there are no unresolved comments.
-6. Rebase on `master` with `git pull --rebase origin master`.
-7. Bump the version with `invoke bump [patch|minor|major]`.<sup>4</sup>
-8. Merge the MR and ensure that your branch is deleted.
-
-Notes:
-
-1. Prefix your branch name with a [Jira issue key](https://support.atlassian.com/jira-software-cloud/docs/what-is-an-issue/#Workingwithissues-Projectandissuekeys), or your initials if there is no related Jira issue.
-2. The `WIP:` prefix indicates that the MR is still a Work In Progress.
-3. A good commit message completes the sentence [If applied, this commit will ..](https://chris.beams.io/posts/git-commit/).
-4. Use [Semantic Versioning](https://semver.org/) to decide whether you bump the patch, minor, or major version.
-
-</details>
+The `main.py` file combines both the field boundary detector model, and the Google Earth Engine code in a single interface. 
+This script allows you to easily query the model. The only things you need are a pre-trained model and the `(latitude,longitude)` coordinate of the field for which you want to extract the boundaries for.

@@ -30,12 +30,15 @@ class FieldBoundaryDetectorInterface:
         self.model = FieldBoundaryDetector(model_path=model_path)
         start_session()
 
-    def __call__(self, lat: float, lng: float) -> Optional[List[Tuple[float, float]]]:
+    def __call__(
+        self, lat: float, lng: float, thr: float = 0.5
+    ) -> Optional[List[Tuple[float, float]]]:
         """
         Get the field-polygon of the field overlapping with the provided coordinate.
 
         :param lat: Latitude coordinate
         :param lng: Longitude coordinate
+        :param thr: Certainty threshold
         :return: Polygon (list of (lat,lng) coordinates) or None if no field recognised
         """
         # Create temporal file to write extracted image to
@@ -48,6 +51,7 @@ class FieldBoundaryDetectorInterface:
         field = np.array(Image.open(f))
 
         # Make prediction
+        self.model.thr = thr
         polygon = self.model(field)
 
         # Convert polygon's pixel-coordinates to (lat,lng) coordinates
@@ -75,5 +79,5 @@ if __name__ == "__main__":
     model = FieldBoundaryDetectorInterface(Path.cwd() / "../../models/mask_rcnn")
 
     # Make the prediction
-    pred = model(lat=39.6679328199836, lng=-95.4287818841267)
+    pred = model(lat=39.6679328199836, lng=-95.4287818841267, thr=0.9)
     print(pred)
