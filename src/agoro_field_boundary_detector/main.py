@@ -25,10 +25,17 @@ class FieldBoundaryDetectorInterface:
     def __init__(
         self,
         model_path: Path,
+        new_session: bool = True,
     ) -> None:
-        """Initialise the interface/wrapper by loading in the model and starting a GEE session."""
+        """
+        Initialise the interface/wrapper by loading in the model and starting a GEE session.
+
+        :param model_path: Path towards a pre-trained model file
+        :param new_session: Start a new GEE session
+        """
         self.model = FieldBoundaryDetector(model_path=model_path)
-        start_session()
+        if new_session:
+            start_session()
 
     def __call__(
         self, lat: float, lng: float, thr: float = 0.5
