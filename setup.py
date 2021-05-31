@@ -20,7 +20,7 @@ INSTALL_REQUIRES = [
 
 setup(
     name="agoro_field_boundary_detector",
-    version="0.0.3",
+    version="0.0.4",
     description="Detect field boundaries using satellite imagery.",
     long_description=README,
     long_description_content_type="text/markdown",

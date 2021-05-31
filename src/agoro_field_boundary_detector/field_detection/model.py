@@ -45,6 +45,7 @@ class FieldBoundaryDetector:
         self.n_hidden = n_hidden
         self.thr = thr
         self.model: Optional[torchvision.models.detection.maskrcnn_resnet50_fpn] = None
+        self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
         if reset or not self.load():
             self.create_instance_segmentation_model(pretrained_resnet)
 
@@ -103,6 +104,9 @@ class FieldBoundaryDetector:
             self.n_hidden,
             self.n_classes,
         )
+
+        # Move model to correct device
+        self.model.to(self.device)
         print("Created a new (untrained) FieldBoundaryDetector model")
 
     def train(
@@ -148,10 +152,6 @@ class FieldBoundaryDetector:
             collate_fn=lambda x: tuple(zip(*x)),
         )
 
-        # Move model to the right device
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
-        self.model.to(device)  # type: ignore
-
         # Construct an optimizer
         params = [p for p in self.model.parameters() if p.requires_grad]  # type: ignore
         optimizer = torch.optim.SGD(
@@ -180,7 +180,7 @@ class FieldBoundaryDetector:
                 self.model,
                 optimizer,
                 data_loader,
-                device,
+                self.device,
                 epoch,
                 print_freq=len(data_loader) // 10,
             )
@@ -190,7 +190,7 @@ class FieldBoundaryDetector:
             f1 = evaluate(
                 self.model,
                 data_loader_val,
-                device=device,
+                device=self.device,
             )
             print(f" => F1 epoch {epoch}: {f1}")
 
@@ -237,9 +237,7 @@ class FieldBoundaryDetector:
             assert write_path is not None
             write_path.mkdir(parents=True, exist_ok=True)
 
-        # Move model to the right device and ensure evaluation mode
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
-        self.model.to(device)  # type: ignore
+        # Ensure evaluation mode
         self.model.eval()  # type: ignore
 
         # Extract evaluation-portion of model
@@ -255,7 +253,7 @@ class FieldBoundaryDetector:
         f1 = evaluate(
             self.model,
             data_loader,
-            device=device,
+            device=self.device,
         )
         print(f" ==> F1: {f1}")
 
@@ -295,8 +293,7 @@ class FieldBoundaryDetector:
 
         # Transform image to PyTorch tensor and put on right device
         im_t: torch.Tensor = im if type(im) == torch.Tensor else F_vis.to_tensor(im)  # type: ignore
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")  # type: ignore
-        im_t = im_t.to(device)
+        im_t = im_t.to(self.device)
         with torch.no_grad():
             # Predict all masks
             prediction = self.model([im_t])[0]  # type: ignore
@@ -328,7 +325,7 @@ class FieldBoundaryDetector:
     def load(self) -> bool:
         """Load a previously saved model."""
         if self.path.is_file():
-            self.model = torch.load(self.path, map_location=torch.device("cpu"))  # type: ignore
+            self.model = torch.load(self.path, map_location=self.device)  # type: ignore
             return True
         return False
 
