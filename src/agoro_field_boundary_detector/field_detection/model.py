@@ -13,12 +13,9 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from torchvision.transforms import functional as F_vis
 
-from src.agoro_field_boundary_detector.field_detection.dataset import Dataset
-from src.agoro_field_boundary_detector.field_detection.mask_rcnn.engine import (
-    evaluate,
-    train_one_epoch,
-)
-from src.agoro_field_boundary_detector.field_detection.utils import mask_to_polygons
+from agoro_field_boundary_detector.field_detection.dataset import Dataset
+from agoro_field_boundary_detector.field_detection.mask_rcnn.engine import evaluate, train_one_epoch
+from agoro_field_boundary_detector.field_detection.utils import mask_to_polygons
 
 
 class FieldBoundaryDetector:
@@ -72,7 +69,7 @@ class FieldBoundaryDetector:
         else:
             mask[mask != m_value] = 0
             mask[mask == m_value] = 1
-            return mask_to_polygons(mask)[0]  # type: ignore
+            return mask_to_polygons(mask)[0]
 
     def get_all_polygons(
         self,
@@ -81,7 +78,7 @@ class FieldBoundaryDetector:
         """Extract all the detected field-polygons (in pixel coordinates) from the given image."""
         # Make masking predictions
         mask = self.get_mask(im=im)
-        return mask_to_polygons(mask)  # type: ignore
+        return mask_to_polygons(mask)
 
     def __str__(self) -> str:
         """Textual model representation."""

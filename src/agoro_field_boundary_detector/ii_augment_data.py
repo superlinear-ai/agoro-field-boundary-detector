@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
-from src.agoro_field_boundary_detector.augmentation import (
+from agoro_field_boundary_detector.augmentation import (
     get_random_noise,
     load_annotations,
     polygons_to_mask,
@@ -58,7 +58,7 @@ def generate(
             field_t, mask_t = transform(
                 field=field,
                 mask=mask,
-                translation=t,
+                translation=t,  # type: ignore
                 t_idx=t_idx,
                 noise=n,
                 n_idx=n_idx,

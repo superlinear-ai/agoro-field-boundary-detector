@@ -1,11 +1,11 @@
 """Data related methods (mainly used for data augmentation)."""
-from src.agoro_field_boundary_detector.augmentation.transformations import (
+from agoro_field_boundary_detector.augmentation.transformations import (
     get_random_noise,
     t_linear,
     t_quartile,
     transform,
 )
-from src.agoro_field_boundary_detector.augmentation.utils import load_annotations, polygons_to_mask
+from agoro_field_boundary_detector.augmentation.utils import load_annotations, polygons_to_mask
 
 __all__ = [
     "load_annotations",

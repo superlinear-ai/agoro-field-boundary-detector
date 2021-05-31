@@ -11,7 +11,7 @@ import torch._six
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-from src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils import all_gather
+from agoro_field_boundary_detector.field_detection.mask_rcnn.utils import all_gather
 
 
 class CocoEvaluator(object):

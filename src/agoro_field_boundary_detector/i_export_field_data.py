@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 from tqdm import tqdm
 
-from src.agoro_field_boundary_detector.google_earth_engine import (
+from agoro_field_boundary_detector.google_earth_engine import (
     NaipCollection,
     create_bounding_box,
     start_session,

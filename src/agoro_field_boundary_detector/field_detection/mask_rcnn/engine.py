@@ -7,11 +7,11 @@ from typing import Any
 import torch
 import torchvision.models.detection.mask_rcnn
 
-from src.agoro_field_boundary_detector.field_detection.mask_rcnn.coco_eval import CocoEvaluator
-from src.agoro_field_boundary_detector.field_detection.mask_rcnn.coco_utils import (
+from agoro_field_boundary_detector.field_detection.mask_rcnn.coco_eval import CocoEvaluator
+from agoro_field_boundary_detector.field_detection.mask_rcnn.coco_utils import (
     get_coco_api_from_dataset,
 )
-from src.agoro_field_boundary_detector.field_detection.mask_rcnn.utils import (
+from agoro_field_boundary_detector.field_detection.mask_rcnn.utils import (
     MetricLogger,
     SmoothedValue,
     reduce_dict,

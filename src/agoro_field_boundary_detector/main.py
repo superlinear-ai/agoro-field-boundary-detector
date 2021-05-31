@@ -7,8 +7,8 @@ from typing import List, Optional, Tuple
 import numpy as np
 from PIL import Image
 
-from src.agoro_field_boundary_detector.field_detection import FieldBoundaryDetector
-from src.agoro_field_boundary_detector.google_earth_engine import (
+from agoro_field_boundary_detector.field_detection import FieldBoundaryDetector
+from agoro_field_boundary_detector.google_earth_engine import (
     NaipCollection,
     adjust_polygon,
     create_bounding_box,
@@ -55,7 +55,7 @@ class FieldBoundaryDetectorInterface:
         polygon = self.model(field)
 
         # Convert polygon's pixel-coordinates to (lat,lng) coordinates
-        polygon = adjust_polygon(
+        polygon_adj = adjust_polygon(
             coordinate=(lat, lng),
             center=(1024, 1024),
             polygon=polygon,
@@ -63,7 +63,7 @@ class FieldBoundaryDetectorInterface:
 
         # Remove the temporal file and return the result
         f.unlink(missing_ok=True)
-        return polygon if polygon else None
+        return polygon_adj if polygon_adj else None
 
     def __str__(self) -> str:
         """Representation of the data collection."""
