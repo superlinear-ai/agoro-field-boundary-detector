@@ -1,27 +1,8 @@
 """Utilisation functions."""
-import json
 from math import cos, pi
-from pathlib import Path
 from typing import Any, List, Tuple
 
 import ee
-import geopandas
-
-
-def to_geojson(path: Path) -> Any:
-    """Transform a given shapefile - defined under path - to geojson."""
-    temp = Path.cwd() / "temp.geojson"
-
-    # Transform shapefile to GeoJSON
-    shp_file = geopandas.read_file(path)
-    shp_file.to_file(temp, driver="GeoJSON")
-
-    # Open the GeoJSON file
-    with open(temp, "r") as f:
-        geojson = json.load(f)
-
-    temp.unlink(missing_ok=True)
-    return geojson
 
 
 def to_polygon(geojson: Any) -> ee.Geometry:

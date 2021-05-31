@@ -15,13 +15,12 @@ INSTALL_REQUIRES = [
     "torchvision~=0.9.1",
     "pycocotools~=2.0.2",
     "earthengine-api~=0.1.267",
-    "geopandas~=0.9.0",
     "opencv-python~=4.5.2.52",
 ]
 
 setup(
     name="agoro_field_boundary_detector",
-    version="0.0.2",
+    version="0.0.3",
     description="Detect field boundaries using satellite imagery.",
     long_description=README,
     long_description_content_type="text/markdown",
