@@ -55,7 +55,7 @@ class FieldBoundaryDetectorInterface:
         box = to_polygon(create_bounding_box(lat=lat, lng=lng))
         coll = NaipCollection(region=box)
         coll.export_as_png(file_name=f)
-        field = np.array(Image.open(f))
+        field = np.array(Image.open(f))[:, :, :3]  # Assure RGB
 
         # Make prediction
         self.model.thr = thr
