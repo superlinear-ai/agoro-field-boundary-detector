@@ -125,4 +125,4 @@ def evaluate(model: Any, data_loader: Any, device: Any) -> Any:
     # Return the F1 score of IoU=.5:.95
     stats = coco_evaluator.coco_eval["segm"].stats
     p, r = stats[0], stats[8]
-    return 2 * (p * r) / (p + r)
+    return 2 * (p * r) / max(p + r, 1e-5)
