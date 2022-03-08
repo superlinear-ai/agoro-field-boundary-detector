@@ -2,6 +2,8 @@
 
 Detect field boundaries using satellite imagery.
 
+**Note that this repository is _not_ under active support.**
+
 
 ## Installation
 To install this package in your environment, run:
